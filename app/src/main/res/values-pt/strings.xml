@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name">Histórico de Notificações</string>
+
+    <!-- Main Screen -->
+    <string name="title_notification_history">Histórico de Notificações</string>
+    <string name="no_apps_tracked">Nenhum app sendo monitorado</string>
+    <string name="tap_plus_to_add">Toque no botão + para adicionar apps</string>
+    <string name="total_apps">Total: %1$d aplicativos</string>
+    <string name="unread">Não lidas: %1$d</string>
+    <string name="total">Total: %1$d</string>
+    <string name="permission_required">Permissão necessária</string>
+    <string name="notification_access_needed">Este aplicativo precisa de acesso às notificações para funcionar. Por favor, habilite o acesso às notificações nas configurações do sistema.</string>
+    <string name="go_to_settings">Ir para Configurações</string>
+    <string name="later">Mais tarde</string>
+
+    <!-- App Detail Screen -->
+    <string name="app_details">Detalhes do App</string>
+    <string name="search_notifications">Pesquisar notificações</string>
+    <string name="show_only_unread">Mostrar apenas não lidas</string>
+    <string name="multi_selection">Seleção múltipla</string>
+    <string name="no_notifications">Nenhuma notificação salva para este app</string>
+    <string name="no_unread_notifications">Nenhuma notificação não lida para este app</string>
+    <string name="cancel_selection">Cancelar seleção</string>
+    <string name="select_all">Selecionar tudo</string>
+    <string name="delete_selected">Excluir selecionados</string>
+    <string name="selected">%1$d selecionados</string>
+    <string name="mark_all_read">Marcar todas como lidas</string>
+    <string name="delete_all">Excluir todas as notificações</string>
+    <string name="new_notification">Nova</string>
+    <string name="no_title">Sem título</string>
+    <string name="no_content">Sem conteúdo</string>
+    <string name="copy">Copiar</string>
+    <string name="view_details">Ver detalhes técnicos</string>
+    <string name="mark_as_read">Marcar como lida</string>
+    <string name="add_to_ignored">Adicionar aos ignorados</string>
+    <string name="delete">Excluir</string>
+    <string name="technical_details">Detalhes técnicos</string>
+    <string name="no_technical_data">Nenhum dado técnico disponível</string>
+    <string name="error_processing">Erro ao processar dados técnicos</string>
+    <string name="close">Fechar</string>
+    <string name="notification_copied">Notificação copiada</string>
+    <string name="added_to_ignored">Adicionado ao dicionário de ignorados</string>
+
+    <!-- Add Apps Screen -->
+    <string name="add_apps_to_track">Adicionar apps para monitorar</string>
+    <string name="search_apps">Pesquisar apps</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Configurações</string>
+    <string name="theme">Tema</string>
+    <string name="system_default">Padrão do sistema</string>
+    <string name="light">Claro</string>
+    <string name="dark">Escuro</string>
+    <string name="ignored_messages">Mensagens ignoradas</string>
+    <string name="no_ignored_messages">Nenhuma mensagem no dicionário de ignorados</string>
+    <string name="added">Adicionado: %1$s</string>
+    <string name="language">Idioma</string>
+    <string name="english">Inglês</string>
+    <string name="spanish">Espanhol</string>
+    <string name="german">Alemão</string>
+    <string name="portuguese">Português</string>
+    <string name="italian">Italiano</string>
+    <string name="system_language">Idioma do sistema</string>
+    <string name="biometric_lock">Bloqueio Biométrico</string>
+    <string name="enable_biometric">Ativar autenticação biométrica</string>
+    <string name="biometric_description">Proteja seu histórico de notificações com autenticação biométrica (impressão digital, face, etc.)</string>
+    <string name="biometric_prompt_title">Autentique para acessar</string>
+    <string name="biometric_prompt_subtitle">Use sua credencial biométrica para acessar o Histórico de Notificações</string>
+    <string name="biometric_prompt_description">Isso garante que seus dados de notificação permaneçam privados</string>
+    <string name="biometric_error">Falha na autenticação. Por favor, tente novamente.</string>
+    <string name="biometric_not_available">A autenticação biométrica não está disponível neste dispositivo</string>
+    <string name="cancel">Cancelar</string>
+</resources>

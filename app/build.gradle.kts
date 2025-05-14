@@ -45,6 +45,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+        freeCompilerArgs += listOf("-Xsuppress-version-warnings")
     }
 
     buildFeatures {
@@ -91,6 +92,8 @@ dependencies {
 
     // DataStore
     implementation(libs.androidx.datastore.preferences)
+    // Biometric
+    implementation(libs.androidx.biometric)
 
     // Testing
     testImplementation(libs.junit)

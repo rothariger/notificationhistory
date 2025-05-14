@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name">Benachrichtigungsverlauf</string>
+
+    <!-- Main Screen -->
+    <string name="title_notification_history">Benachrichtigungsverlauf</string>
+    <string name="no_apps_tracked">Keine Apps werden verfolgt</string>
+    <string name="tap_plus_to_add">Tippen Sie auf die + Schaltfläche, um Apps hinzuzufügen</string>
+    <string name="total_apps">Gesamt: %1$d Anwendungen</string>
+    <string name="unread">Ungelesen: %1$d</string>
+    <string name="total">Gesamt: %1$d</string>
+    <string name="permission_required">Berechtigung erforderlich</string>
+    <string name="notification_access_needed">Diese App benötigt Zugriff auf Benachrichtigungen. Bitte aktivieren Sie den Benachrichtigungszugriff in den Systemeinstellungen.</string>
+    <string name="go_to_settings">Zu den Einstellungen</string>
+    <string name="later">Später</string>
+
+    <!-- App Detail Screen -->
+    <string name="app_details">App-Details</string>
+    <string name="search_notifications">Benachrichtigungen durchsuchen</string>
+    <string name="show_only_unread">Nur ungelesene anzeigen</string>
+    <string name="multi_selection">Mehrfachauswahl</string>
+    <string name="no_notifications">Keine Benachrichtigungen für diese App gespeichert</string>
+    <string name="no_unread_notifications">Keine ungelesenen Benachrichtigungen für diese App</string>
+    <string name="cancel_selection">Auswahl abbrechen</string>
+    <string name="select_all">Alles auswählen</string>
+    <string name="delete_selected">Ausgewählte löschen</string>
+    <string name="selected">%1$d ausgewählt</string>
+    <string name="mark_all_read">Alle als gelesen markieren</string>
+    <string name="delete_all">Alle Benachrichtigungen löschen</string>
+    <string name="new_notification">Neu</string>
+    <string name="no_title">Kein Titel</string>
+    <string name="no_content">Kein Inhalt</string>
+    <string name="copy">Kopieren</string>
+    <string name="view_details">Technische Details anzeigen</string>
+    <string name="mark_as_read">Als gelesen markieren</string>
+    <string name="add_to_ignored">Zu ignorierten hinzufügen</string>
+    <string name="delete">Löschen</string>
+    <string name="technical_details">Technische Details</string>
+    <string name="no_technical_data">Keine technischen Daten verfügbar</string>
+    <string name="error_processing">Fehler bei der Verarbeitung der technischen Daten</string>
+    <string name="close">Schließen</string>
+    <string name="notification_copied">Benachrichtigung kopiert</string>
+    <string name="added_to_ignored">Zum Ignorieren-Wörterbuch hinzugefügt</string>
+
+    <!-- Add Apps Screen -->
+    <string name="add_apps_to_track">Apps zum Verfolgen hinzufügen</string>
+    <string name="search_apps">Apps suchen</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Einstellungen</string>
+    <string name="theme">Thema</string>
+    <string name="system_default">Systemstandard</string>
+    <string name="light">Hell</string>
+    <string name="dark">Dunkel</string>
+    <string name="ignored_messages">Ignorierte Nachrichten</string>
+    <string name="no_ignored_messages">Keine Nachrichten im Ignorier-Wörterbuch</string>
+    <string name="added">Hinzugefügt: %1$s</string>
+    <string name="language">Sprache</string>
+    <string name="english">Englisch</string>
+    <string name="spanish">Spanisch</string>
+    <string name="german">Deutsch</string>
+    <string name="portuguese">Portugiesisch</string>
+    <string name="italian">Italienisch</string>
+    <string name="system_language">Systemsprache</string>
+    <string name="biometric_lock">Biometrische Sperre</string>
+    <string name="enable_biometric">Biometrische Authentifizierung aktivieren</string>
+    <string name="biometric_description">Schützen Sie Ihren Benachrichtigungsverlauf mit biometrischer Authentifizierung (Fingerabdruck, Gesicht, usw.)</string>
+    <string name="biometric_prompt_title">Authentifizieren Sie sich für den Zugriff</string>
+    <string name="biometric_prompt_subtitle">Verwenden Sie Ihre biometrischen Daten für den Zugriff auf den Benachrichtigungsverlauf</string>
+    <string name="biometric_prompt_description">Dies stellt sicher, dass Ihre Benachrichtigungsdaten privat bleiben</string>
+    <string name="biometric_error">Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.</string>
+    <string name="biometric_not_available">Biometrische Authentifizierung ist auf diesem Gerät nicht verfügbar</string>
+    <string name="cancel">Abbrechen</string>
+</resources>
