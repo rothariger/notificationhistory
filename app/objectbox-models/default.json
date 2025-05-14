@@ -1,0 +1,154 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:5381395365717893569",
+      "lastPropertyId": "4:1512977219491892786",
+      "name": "AppEntity",
+      "properties": [
+        {
+          "id": "1:5049042421590886786",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3964606294616114180",
+          "name": "packageName",
+          "indexId": "1:463689682309002580",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:5679284187948202769",
+          "name": "appName",
+          "type": 9
+        },
+        {
+          "id": "4:1512977219491892786",
+          "name": "isTracked",
+          "type": 1
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:662392779172843266",
+          "name": "notifications",
+          "targetId": "2:1990018237264335255"
+        }
+      ]
+    },
+    {
+      "id": "2:1990018237264335255",
+      "lastPropertyId": "10:4665587905533613629",
+      "name": "NotificationEntity",
+      "properties": [
+        {
+          "id": "1:2901962083978514000",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2437597805459839122",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "3:3944103019694533291",
+          "name": "content",
+          "type": 9
+        },
+        {
+          "id": "4:4522787140557633980",
+          "name": "timestamp",
+          "type": 10
+        },
+        {
+          "id": "5:4211626884567095625",
+          "name": "appPackageName",
+          "indexId": "3:8305133383766141205",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "6:5884920866021870650",
+          "name": "appId",
+          "indexId": "2:3259403262059153366",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "AppEntity"
+        },
+        {
+          "id": "7:6002942330582458784",
+          "name": "fullContent",
+          "type": 9
+        },
+        {
+          "id": "8:5115109562046115982",
+          "name": "extraData",
+          "type": 9
+        },
+        {
+          "id": "9:2127032297230947193",
+          "name": "isRead",
+          "indexId": "5:7086595313529172062",
+          "type": 1,
+          "flags": 8
+        },
+        {
+          "id": "10:4665587905533613629",
+          "name": "uniqueKey",
+          "indexId": "6:254076878678352550",
+          "type": 9,
+          "flags": 2080
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:8263114745427603120",
+      "lastPropertyId": "4:1633040546503116538",
+      "name": "IgnoredMessageEntity",
+      "properties": [
+        {
+          "id": "1:413791476471921934",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:325846810975656351",
+          "name": "pattern",
+          "indexId": "4:4228570212722206496",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:1677726750352408797",
+          "name": "isExactMatch",
+          "type": 1
+        },
+        {
+          "id": "4:1633040546503116538",
+          "name": "dateAdded",
+          "type": 10
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "3:8263114745427603120",
+  "lastIndexId": "6:254076878678352550",
+  "lastRelationId": "1:662392779172843266",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

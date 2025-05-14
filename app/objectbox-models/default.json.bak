@@ -1,0 +1,99 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:5381395365717893569",
+      "lastPropertyId": "4:1512977219491892786",
+      "name": "AppEntity",
+      "properties": [
+        {
+          "id": "1:5049042421590886786",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3964606294616114180",
+          "name": "packageName",
+          "indexId": "1:463689682309002580",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:5679284187948202769",
+          "name": "appName",
+          "type": 9
+        },
+        {
+          "id": "4:1512977219491892786",
+          "name": "isTracked",
+          "type": 1
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:662392779172843266",
+          "name": "notifications",
+          "targetId": "2:1990018237264335255"
+        }
+      ]
+    },
+    {
+      "id": "2:1990018237264335255",
+      "lastPropertyId": "6:5884920866021870650",
+      "name": "NotificationEntity",
+      "properties": [
+        {
+          "id": "1:2901962083978514000",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2437597805459839122",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "3:3944103019694533291",
+          "name": "content",
+          "type": 9
+        },
+        {
+          "id": "4:4522787140557633980",
+          "name": "timestamp",
+          "type": 10
+        },
+        {
+          "id": "5:4211626884567095625",
+          "name": "appPackageName",
+          "indexId": "3:8305133383766141205",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "6:5884920866021870650",
+          "name": "appId",
+          "indexId": "2:3259403262059153366",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "AppEntity"
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "2:1990018237264335255",
+  "lastIndexId": "3:8305133383766141205",
+  "lastRelationId": "1:662392779172843266",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
