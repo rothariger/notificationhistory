@@ -146,6 +146,16 @@ class AppDetailViewModel @Inject constructor(
         }
     }
 
+    fun deleteNotifications(notificationIds: List<Long>) {
+        viewModelScope.launch {
+            notificationRepository.deleteNotifications(notificationIds)
+
+            // Actualizar la lista después de eliminar
+            allNotifications = allNotifications.filterNot { notificationIds.contains(it.id) }
+            updateFilteredNotifications()
+        }
+    }
+
     fun addToIgnoreList(title: String, content: String) {
         viewModelScope.launch {
             // Decidir qué patrón añadir al diccionario de ignorados
