@@ -64,7 +64,7 @@ class NotificationRepository @Inject constructor() {
     }
 
     private fun generateFallbackUniqueKey(notification: NotificationEntity): String {
-        return "${notification.appPackageName}_${notification.title}_${notification.content}"
+        return "${notification.appPackageName}_${notification.title}_${notification.content}_${System.currentTimeMillis()}"
     }
 
     suspend fun isDuplicate(packageName: String, title: String?, content: String?): Boolean = withContext(Dispatchers.IO) {
@@ -121,6 +121,10 @@ class NotificationRepository @Inject constructor() {
 
     suspend fun deleteNotification(notificationId: Long) = withContext(Dispatchers.IO) {
         notificationBox.remove(notificationId)
+    }
+
+    suspend fun deleteNotifications(notificationIds: List<Long>) = withContext(Dispatchers.IO) {
+        notificationBox.remove(notificationIds)
     }
 
     suspend fun notificationExists(uniqueKey: String): Boolean = withContext(Dispatchers.IO) {

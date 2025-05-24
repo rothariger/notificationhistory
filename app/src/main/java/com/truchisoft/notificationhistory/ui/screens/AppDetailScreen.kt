@@ -39,15 +39,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.SelectAll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.activity.compose.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,6 +81,15 @@ fun AppDetailScreen(
     val showOnlyUnread by viewModel.showOnlyUnread.collectAsState()
     val dateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault())
 
+    var isInSelectionMode by rememberSaveable { mutableStateOf(false) }
+    val selectedNotificationIds = remember { mutableStateListOf<Long>() }
+
+    // Handle back press to exit selection mode
+    BackHandler(enabled = isInSelectionMode) {
+        isInSelectionMode = false
+        selectedNotificationIds.clear()
+    }
+
     LaunchedEffect(packageName) {
         viewModel.loadAppDetails(packageName)
     }
@@ -80,18 +97,63 @@ fun AppDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(app?.appName ?: "Detalles de la App") },
+                title = {
+                    if (isInSelectionMode) {
+                        Text("${selectedNotificationIds.size} seleccionadas")
+                    } else {
+                        Text(app?.appName ?: "Detalles de la App")
+                    }
+                },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = {
+                        if (isInSelectionMode) {
+                            isInSelectionMode = false
+                            selectedNotificationIds.clear()
+                        } else {
+                            onBackClick()
+                        }
+                    }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.markAllAsRead() }) {
-                        Icon(Icons.Default.DoneAll, contentDescription = "Marcar todo como leído")
-                    }
-                    IconButton(onClick = { viewModel.clearNotifications() }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Borrar Todas las Notificaciones")
+                    if (isInSelectionMode) {
+                        IconButton(onClick = {
+                            if (selectedNotificationIds.size == notifications.size) {
+                                // Deselect all
+                                selectedNotificationIds.clear()
+                            } else {
+                                // Select all
+                                selectedNotificationIds.clear()
+                                selectedNotificationIds.addAll(notifications.map { it.id })
+                            }
+                        }) {
+                            if (selectedNotificationIds.size == notifications.size) {
+                                Icon(Icons.Default.Clear, contentDescription = "Deseleccionar todo")
+                            } else {
+                                Icon(Icons.Default.SelectAll, contentDescription = "Seleccionar todo")
+                            }
+                        }
+                        IconButton(
+                            onClick = {
+                                viewModel.deleteNotifications(selectedNotificationIds.toList())
+                                isInSelectionMode = false
+                                selectedNotificationIds.clear()
+                            },
+                            enabled = selectedNotificationIds.isNotEmpty()
+                        ) {
+                            Icon(Icons.Default.Delete, contentDescription = "Eliminar seleccionadas")
+                        }
+                    } else {
+                        IconButton(onClick = { viewModel.markAllAsRead() }) {
+                            Icon(Icons.Default.DoneAll, contentDescription = "Marcar todo como leído")
+                        }
+                        IconButton(onClick = {
+                            // TODO: Add confirmation dialog before deleting all
+                            viewModel.clearNotifications()
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Borrar Todas las Notificaciones")
+                        }
                     }
                 }
             )
@@ -148,16 +210,39 @@ fun AppDetailScreen(
                             .weight(1f)
                             .padding(horizontal = 16.dp)
                     ) {
-                        items(notifications) { notification ->
+                        items(notifications, key = { it.id }) { notification ->
+                            val isSelected = selectedNotificationIds.contains(notification.id)
                             NotificationCard(
                                 notification = notification,
                                 dateFormat = dateFormat,
+                                isInSelectionMode = isInSelectionMode,
+                                isSelected = isSelected,
+                                onToggleSelection = {
+                                    if (selectedNotificationIds.contains(notification.id)) {
+                                        selectedNotificationIds.remove(notification.id)
+                                    } else {
+                                        selectedNotificationIds.add(notification.id)
+                                    }
+                                    // If all items are deselected, exit selection mode
+                                    if (selectedNotificationIds.isEmpty()) {
+                                        isInSelectionMode = false
+                                    }
+                                },
+                                onEnableSelectionMode = {
+                                    isInSelectionMode = true
+                                    selectedNotificationIds.add(notification.id)
+                                },
                                 onCopy = {
                                     copyToClipboard(context, notification)
                                     Toast.makeText(context, "Notificación copiada", Toast.LENGTH_SHORT).show()
                                 },
                                 onDelete = {
                                     viewModel.deleteNotification(notification.id)
+                                    // Ensure ID is removed from selection if it was selected
+                                    selectedNotificationIds.remove(notification.id)
+                                    if (selectedNotificationIds.isEmpty() && isInSelectionMode) {
+                                        isInSelectionMode = false
+                                    }
                                 },
                                 onMarkAsRead = {
                                     viewModel.markAsRead(notification.id)
@@ -175,10 +260,15 @@ fun AppDetailScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotificationCard(
     notification: NotificationEntity,
     dateFormat: SimpleDateFormat,
+    isInSelectionMode: Boolean,
+    isSelected: Boolean,
+    onToggleSelection: () -> Unit,
+    onEnableSelectionMode: () -> Unit,
     onCopy: () -> Unit,
     onDelete: () -> Unit,
     onMarkAsRead: () -> Unit,
@@ -187,66 +277,102 @@ fun NotificationCard(
     var showMenu by remember { mutableStateOf(false) }
     var showDetailsDialog by remember { mutableStateOf(false) }
 
-    // Indicador visual para notificaciones no leídas - Ahora más destacado
-    val cardColors = if (!notification.isRead) {
+    val cardColors = if (isSelected) {
         CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f) // Color for selected items
+        )
+    } else if (!notification.isRead) {
+        CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f) // Color for unread items
         )
     } else {
-        CardDefaults.cardColors()
+        CardDefaults.cardColors() // Default color
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .combinedClickable(
+                onClick = {
+                    if (isInSelectionMode) {
+                        onToggleSelection()
+                    } else {
+                        // Original click action: show details or similar, handled by dropdown for now
+                        // For simplicity, we can make the whole card clickable to show details
+                        // or rely on the menu. If relying on menu, this can be empty.
+                        // Alternatively, directly toggle details dialog:
+                        // showDetailsDialog = true
+                    }
+                },
+                onLongClick = {
+                    if (!isInSelectionMode) {
+                        onEnableSelectionMode()
+                    }
+                }
+            ),
         colors = cardColors
     ) {
-        Column(
+        Row(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
+                .padding(if (isInSelectionMode) 0.dp else 16.dp) // No padding when checkbox is visible for alignment
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            if (isInSelectionMode) {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = { onToggleSelection() },
+                    modifier = Modifier.padding(start = 16.dp, end = 8.dp) // Adjust padding as needed
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 16.dp, horizontal = if (isInSelectionMode) 0.dp else 16.dp)
             ) {
-                // Indicador visual adicional para no leídos
-                if (!notification.isRead) {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = MaterialTheme.shapes.small
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (!notification.isRead && !isInSelectionMode) { // Hide "Nuevo" when in selection mode or read
+                        Box(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = MaterialTheme.shapes.small
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "Nuevo",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = "Nuevo",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        }
+                    }
+
+                    Text(
+                        text = notification.title ?: "Sin Título",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(if (isInSelectionMode) 1f else 0.8f) // Adjust weight if menu is present
+                    )
+
+                    if (!isInSelectionMode) {
+                        IconButton(
+                            onClick = { showMenu = true }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Más opciones"
+                            )
+                        }
                     }
                 }
 
-                Text(
-                    text = notification.title ?: "Sin Título",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-
-                IconButton(
-                    onClick = { showMenu = true }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Más opciones"
-                    )
-                }
-
                 DropdownMenu(
-                    expanded = showMenu,
+                    expanded = showMenu, // This will only be true if !isInSelectionMode
                     onDismissRequest = { showMenu = false }
                 ) {
                     DropdownMenuItem(
@@ -286,15 +412,13 @@ fun NotificationCard(
                         text = { Text("Eliminar") },
                         leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
                         onClick = {
-                            onDelete()
+                            onDelete() // This already handles removing from selection if needed
                             showMenu = false
                         }
                     )
                 }
-            }
 
-            // Mostrar el contenido completo si está disponible, o el contenido normal si no
-            Text(
+                Text(
                 text = notification.fullContent ?: notification.content ?: "Sin Contenido",
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 5,
