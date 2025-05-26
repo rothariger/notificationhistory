@@ -9,14 +9,17 @@ import io.objectbox.Box
 import io.objectbox.BoxStore
 
 object ObjectBox {
-    lateinit var boxStore: BoxStore
-        private set
+    private lateinit var boxStore: BoxStore
 
     fun init(context: Context) {
         boxStore = MyObjectBox.builder()
             .androidContext(context.applicationContext)
             .build()
     }
+
+    fun isInitialized(): Boolean = ::boxStore.isInitialized
+
+    fun getBoxStore(): BoxStore = boxStore
 
     fun getAppBox(): Box<AppEntity> = boxStore.boxFor(AppEntity::class.java)
 

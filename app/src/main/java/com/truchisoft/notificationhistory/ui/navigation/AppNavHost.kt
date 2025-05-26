@@ -29,21 +29,18 @@ fun AppNavHost(navController: NavHostController) {
             )
         }
 
-        composable(Screen.AddApps.route) {
-            AddAppsScreen(
+        composable(Screen.AppDetail.route) { backStackEntry ->
+            val packageName = backStackEntry.arguments?.getString("packageName") ?: ""
+            AppDetailScreen(
+                packageName = packageName,
                 onBackClick = {
                     navController.popBackStack()
                 }
             )
         }
 
-        composable(
-            route = Screen.AppDetail.route,
-            arguments = Screen.AppDetail.arguments
-        ) { backStackEntry ->
-            val packageName = backStackEntry.arguments?.getString(Screen.AppDetail.PACKAGE_NAME_ARG) ?: ""
-            AppDetailScreen(
-                packageName = packageName,
+        composable(Screen.AddApps.route) {
+            AddAppsScreen(
                 onBackClick = {
                     navController.popBackStack()
                 }

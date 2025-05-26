@@ -1,33 +1,21 @@
 package com.truchisoft.notificationhistory.ui.screens
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DoneAll
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -36,10 +24,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,17 +40,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.truchisoft.notificationhistory.data.database.entities.NotificationEntity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.truchisoft.notificationhistory.R
+import com.truchisoft.notificationhistory.ui.components.NotificationCard
 import com.truchisoft.notificationhistory.ui.viewmodels.AppDetailViewModel
-import java.text.SimpleDateFormat
-import java.util.Locale
-import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,344 +57,201 @@ fun AppDetailScreen(
     onBackClick: () -> Unit,
     viewModel: AppDetailViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
     val app by viewModel.app.collectAsState()
-    val notifications by viewModel.notifications.collectAsState()
-    val showOnlyUnread by viewModel.showOnlyUnread.collectAsState()
-    val dateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault())
+    val filteredNotifications by viewModel.filteredNotifications.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val isSearchActive by viewModel.isSearchActive.collectAsState()
+    val selectionMode by viewModel.selectionMode.collectAsState()
+    val selectedItems by viewModel.selectedItems.collectAsState()
 
-    LaunchedEffect(packageName) {
-        viewModel.loadAppDetails(packageName)
+    var showMenu by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteSelectedDialog by remember { mutableStateOf(false) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshData()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(R.string.delete_notifications)) },
+            text = { Text(stringResource(R.string.delete_all_notifications_confirmation, app?.appName ?: "")) },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.deleteAllNotifications()
+                    showDeleteDialog = false
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    if (showDeleteSelectedDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteSelectedDialog = false },
+            title = { Text(stringResource(R.string.delete_selected)) },
+            text = { Text(stringResource(R.string.delete_selected_confirmation, selectedItems.size)) },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.deleteSelectedItems()
+                    showDeleteSelectedDialog = false
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteSelectedDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(app?.appName ?: "Detalles de la App") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.markAllAsRead() }) {
-                        Icon(Icons.Default.DoneAll, contentDescription = "Marcar todo como leído")
-                    }
-                    IconButton(onClick = { viewModel.clearNotifications() }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Borrar Todas las Notificaciones")
-                    }
+            if (isSearchActive) {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = { viewModel.setSearchQuery(it) },
+                    onSearch = { viewModel.setSearchQuery(it) },
+                    active = isSearchActive,
+                    onActiveChange = { viewModel.setSearchActive(it) },
+                    placeholder = { Text(stringResource(R.string.search_notifications)) },
+                    leadingIcon = {
+                        IconButton(onClick = { viewModel.setSearchActive(false) }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
+                        }
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { viewModel.setSearchQuery("") }) {
+                                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.clear))
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Espacio para sugerencias de búsqueda (vacío)
                 }
-            )
+            } else {
+                TopAppBar(
+                    title = { Text(app?.appName ?: stringResource(R.string.app_details)) },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { viewModel.refreshData() }) {
+                            Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        }
+                        IconButton(onClick = { viewModel.setSearchActive(true) }) {
+                            Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search))
+                        }
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more_options))
+                        }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.mark_all_as_read)) },
+                                onClick = {
+                                    viewModel.markAllAsRead()
+                                    showMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.delete_all)) },
+                                onClick = {
+                                    showDeleteDialog = true
+                                    showMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.selection_mode)) },
+                                onClick = {
+                                    viewModel.toggleSelectionMode()
+                                    showMenu = false
+                                }
+                            )
+                        }
+                    }
+                )
+            }
         }
     ) { paddingValues ->
-        if (app == null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                // Filtro para mostrar solo no leídos
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = showOnlyUnread,
-                        onCheckedChange = { viewModel.toggleShowOnlyUnread() }
-                    )
-                    Text(
-                        text = "Mostrar solo no leídos",
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-
-                if (notifications.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = if (showOnlyUnread)
-                                "No hay notificaciones no leídas para esta app"
-                            else
-                                "No hay notificaciones guardadas para esta app"
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f)
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        items(notifications) { notification ->
-                            NotificationCard(
-                                notification = notification,
-                                dateFormat = dateFormat,
-                                onCopy = {
-                                    copyToClipboard(context, notification)
-                                    Toast.makeText(context, "Notificación copiada", Toast.LENGTH_SHORT).show()
-                                },
-                                onDelete = {
-                                    viewModel.deleteNotification(notification.id)
-                                },
-                                onMarkAsRead = {
-                                    viewModel.markAsRead(notification.id)
-                                },
-                                onAddToIgnoreList = {
-                                    viewModel.addToIgnoreList(notification.title ?: "", notification.content ?: "")
-                                    Toast.makeText(context, "Añadido al diccionario de ignorados", Toast.LENGTH_SHORT).show()
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun NotificationCard(
-    notification: NotificationEntity,
-    dateFormat: SimpleDateFormat,
-    onCopy: () -> Unit,
-    onDelete: () -> Unit,
-    onMarkAsRead: () -> Unit,
-    onAddToIgnoreList: () -> Unit
-) {
-    var showMenu by remember { mutableStateOf(false) }
-    var showDetailsDialog by remember { mutableStateOf(false) }
-
-    // Indicador visual para notificaciones no leídas - Ahora más destacado
-    val cardColors = if (!notification.isRead) {
-        CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-        )
-    } else {
-        CardDefaults.cardColors()
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = cardColors
-    ) {
-        Column(
+        PullToRefreshBox(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
+                .fillMaxSize()
+                .padding(paddingValues),
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.refreshData() },
+            state = pullToRefreshState
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Indicador visual adicional para no leídos
-                if (!notification.isRead) {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = MaterialTheme.shapes.small
-                            )
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = "Nuevo",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
-
-                Text(
-                    text = notification.title ?: "Sin Título",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-
-                IconButton(
-                    onClick = { showMenu = true }
+            if (isLoading && !isRefreshing) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Más opciones"
-                    )
+                    CircularProgressIndicator()
                 }
-
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Copiar") },
-                        leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
-                        onClick = {
-                            onCopy()
-                            showMenu = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Ver detalles técnicos") },
-                        leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
-                        onClick = {
-                            showDetailsDialog = true
-                            showMenu = false
-                        }
-                    )
-                    if (!notification.isRead) {
-                        DropdownMenuItem(
-                            text = { Text("Marcar como leído") },
-                            leadingIcon = { Icon(Icons.Default.DoneAll, contentDescription = null) },
-                            onClick = {
-                                onMarkAsRead()
-                                showMenu = false
-                            }
-                        )
-                    }
-                    DropdownMenuItem(
-                        text = { Text("Añadir a ignorados") },
-                        onClick = {
-                            onAddToIgnoreList()
-                            showMenu = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Eliminar") },
-                        leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
-                        onClick = {
-                            onDelete()
-                            showMenu = false
-                        }
-                    )
-                }
-            }
-
-            // Mostrar el contenido completo si está disponible, o el contenido normal si no
-            Text(
-                text = notification.fullContent ?: notification.content ?: "Sin Contenido",
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 5,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
-            Text(
-                text = dateFormat.format(notification.timestamp),
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-    }
-
-    if (showDetailsDialog) {
-        Dialog(onDismissRequest = { showDetailsDialog = false }) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.8f)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxSize()
+            } else if (filteredNotifications.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Detalles técnicos",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        text = if (searchQuery.isEmpty())
+                            stringResource(R.string.no_notifications)
+                        else
+                            stringResource(R.string.no_search_results, searchQuery),
+                        style = MaterialTheme.typography.bodyLarge
                     )
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    ) {
-                        val scrollState = rememberScrollState()
-                        val extraData = notification.extraData
-                        val (detailsContent, hasError) = remember(extraData) {
-                            try {
-                                if (!extraData.isNullOrEmpty()) {
-                                    val jsonObject = JSONObject(extraData)
-                                    val keys = jsonObject.keys()
-                                    val contentList = mutableListOf<Pair<String, String>>()
-
-                                    while (keys.hasNext()) {
-                                        val key = keys.next()
-                                        val value = jsonObject.getString(key)
-                                        contentList.add(key to value)
-                                    }
-
-                                    contentList to false
-                                } else {
-                                    emptyList<Pair<String, String>>() to false
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(filteredNotifications) { notification ->
+                        NotificationCard(
+                            notification = notification,
+                            isSelected = selectedItems.contains(notification.id),
+                            selectionMode = selectionMode,
+                            onClick = {
+                                if (selectionMode) {
+                                    viewModel.toggleItemSelection(notification.id)
                                 }
-                            } catch (e: Exception) {
-                                emptyList<Pair<String, String>>() to true
-                            }
-                        }
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(scrollState)
-                        ) {
-                            if (hasError) {
-                                Text("Error al procesar los datos técnicos")
-                            } else if (detailsContent.isEmpty()) {
-                                Text("No hay datos técnicos disponibles")
-                            } else {
-                                detailsContent.forEach { (key, value) ->
-                                    Text(
-                                        text = "$key:",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        modifier = Modifier.padding(top = 8.dp)
-                                    )
-                                    Text(
-                                        text = value,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        modifier = Modifier.padding(bottom = 8.dp)
-                                    )
+                            },
+                            onLongClick = {
+                                if (!selectionMode) {
+                                    viewModel.toggleSelectionMode()
+                                    viewModel.toggleItemSelection(notification.id)
                                 }
                             }
-                        }
-                    }
-
-                    Button(
-                        onClick = { showDetailsDialog = false },
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(top = 16.dp)
-                    ) {
-                        Text("Cerrar")
+                        )
                     }
                 }
             }
         }
     }
-}
-
-private fun copyToClipboard(context: Context, notification: NotificationEntity) {
-    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clipData = ClipData.newPlainText(
-        "Notificación",
-        """
-        Título: ${notification.title ?: "Sin título"}
-        Contenido: ${notification.fullContent ?: notification.content ?: "Sin contenido"}
-        Fecha: ${SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(notification.timestamp)}
-        """.trimIndent()
-    )
-    clipboardManager.setPrimaryClip(clipData)
 }

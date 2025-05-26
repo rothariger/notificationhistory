@@ -48,8 +48,8 @@ class IgnoredMessageRepository @Inject constructor() {
 
         for (ignoredMessage in ignoredMessages) {
             if (ignoredMessage.isExactMatch) {
-                // Coincidencia exacta
-                if (title == ignoredMessage.pattern || content == ignoredMessage.pattern) {
+                // Coincidencia exacta con el título completo
+                if (title == ignoredMessage.pattern) {
                     return@withContext true
                 }
             } else {

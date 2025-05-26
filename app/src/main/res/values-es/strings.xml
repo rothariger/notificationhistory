@@ -3,10 +3,10 @@
 
     <!-- Main Screen -->
     <string name="title_notification_history">Historial de Notificaciones</string>
-    <string name="no_apps_tracked">No hay apps siendo rastreadas</string>
-    <string name="tap_plus_to_add">Toca el botón + para añadir apps</string>
+    <string name="no_apps_tracked">No hay aplicaciones rastreadas</string>
+    <string name="tap_plus_to_add">Toca el botón + para añadir aplicaciones</string>
     <string name="total_apps">Total: %1$d aplicaciones</string>
-    <string name="unread">No leídos: %1$d</string>
+    <string name="unread">No leídas: %1$d</string>
     <string name="total">Total: %1$d</string>
     <string name="permission_required">Permiso requerido</string>
     <string name="notification_access_needed">Esta aplicación necesita acceso a las notificaciones para funcionar. Por favor, habilita el acceso a notificaciones en la configuración del sistema.</string>
@@ -14,21 +14,21 @@
     <string name="later">Más tarde</string>
 
     <!-- App Detail Screen -->
-    <string name="app_details">Detalles de la App</string>
-    <string name="search_notifications">Buscar en notificaciones</string>
-    <string name="show_only_unread">Mostrar solo no leídos</string>
+    <string name="app_details">Detalles de la aplicación</string>
+    <string name="search_notifications">Buscar notificaciones</string>
+    <string name="show_only_unread">Mostrar solo no leídas</string>
     <string name="multi_selection">Selección múltiple</string>
-    <string name="no_notifications">No hay notificaciones guardadas para esta app</string>
-    <string name="no_unread_notifications">No hay notificaciones no leídas para esta app</string>
+    <string name="no_notifications">No hay notificaciones guardadas para esta aplicación</string>
+    <string name="no_unread_notifications">No hay notificaciones sin leer para esta aplicación</string>
     <string name="cancel_selection">Cancelar selección</string>
     <string name="select_all">Seleccionar todo</string>
     <string name="delete_selected">Eliminar seleccionados</string>
     <string name="selected">%1$d seleccionados</string>
     <string name="mark_all_read">Marcar todo como leído</string>
-    <string name="delete_all">Eliminar Todas las Notificaciones</string>
+    <string name="delete_all">Eliminar todas las notificaciones</string>
     <string name="new_notification">Nuevo</string>
-    <string name="no_title">Sin Título</string>
-    <string name="no_content">Sin Contenido</string>
+    <string name="no_title">Sin título</string>
+    <string name="no_content">Sin contenido</string>
     <string name="copy">Copiar</string>
     <string name="view_details">Ver detalles técnicos</string>
     <string name="mark_as_read">Marcar como leído</string>
@@ -36,14 +36,14 @@
     <string name="delete">Eliminar</string>
     <string name="technical_details">Detalles técnicos</string>
     <string name="no_technical_data">No hay datos técnicos disponibles</string>
-    <string name="error_processing">Error al procesar los datos técnicos</string>
+    <string name="error_processing">Error al procesar datos técnicos</string>
     <string name="close">Cerrar</string>
     <string name="notification_copied">Notificación copiada</string>
     <string name="added_to_ignored">Añadido al diccionario de ignorados</string>
 
     <!-- Add Apps Screen -->
-    <string name="add_apps_to_track">Añadir Apps para Rastrear</string>
-    <string name="search_apps">Buscar apps</string>
+    <string name="add_apps_to_track">Añadir aplicaciones para rastrear</string>
+    <string name="search_apps">Buscar aplicaciones</string>
 
     <!-- Settings Screen -->
     <string name="settings">Configuración</string>
@@ -61,13 +61,31 @@
     <string name="portuguese">Portugués</string>
     <string name="italian">Italiano</string>
     <string name="system_language">Idioma del sistema</string>
-    <string name="biometric_lock">Bloqueo Biométrico</string>
-    <string name="enable_biometric">Activar autenticación biométrica</string>
+    <string name="biometric_lock">Bloqueo biométrico</string>
+    <string name="enable_biometric">Habilitar autenticación biométrica</string>
     <string name="biometric_description">Protege tu historial de notificaciones con autenticación biométrica (huella dactilar, rostro, etc.)</string>
     <string name="biometric_prompt_title">Autenticarse para acceder</string>
-    <string name="biometric_prompt_subtitle">Utiliza tu credencial biométrica para acceder al Historial de Notificaciones</string>
+    <string name="biometric_prompt_subtitle">Usa tu credencial biométrica para acceder al Historial de Notificaciones</string>
     <string name="biometric_prompt_description">Esto asegura que tus datos de notificaciones permanezcan privados</string>
-    <string name="biometric_error">La autenticación falló. Por favor, inténtalo de nuevo.</string>
+    <string name="biometric_error">Autenticación fallida. Por favor, inténtalo de nuevo.</string>
     <string name="biometric_not_available">La autenticación biométrica no está disponible en este dispositivo</string>
     <string name="cancel">Cancelar</string>
+
+    <!-- Additional strings needed for the app -->
+    <string name="more_options">Más opciones</string>
+    <string name="clear">Limpiar</string>
+    <string name="search">Buscar</string>
+    <string name="not_selected">No seleccionado</string>
+    <string name="new_label">Nuevo</string>
+    <string name="delete_notifications">Eliminar notificaciones</string>
+    <string name="delete_all_notifications_confirmation">¿Estás seguro de que quieres eliminar todas las notificaciones de %s?</string>
+    <string name="delete_selected_confirmation">¿Estás seguro de que quieres eliminar %d notificaciones seleccionadas?</string>
+    <string name="no_search_results">No hay resultados para \"%s\"</string>
+    <string name="unread_count">No leídos: %d</string>
+    <string name="total_count">Total: %d</string>
+    <string name="no_tracked_apps">No hay aplicaciones rastreadas</string>
+    <string name="notification_permission_explanation">Esta aplicación necesita acceso a las notificaciones para funcionar. Por favor, habilita el acceso a notificaciones en la configuración del sistema.</string>
+    <string name="add_apps">Añadir aplicaciones</string>
+    <string name="mark_all_as_read">Marcar todo como leído</string>
+    <string name="selection_mode">Modo selección</string>
 </resources>

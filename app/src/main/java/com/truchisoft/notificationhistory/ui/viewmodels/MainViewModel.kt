@@ -25,16 +25,39 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     // Mapa de packageName a par (no leídos, total)
     private val _appNotificationCounts = MutableStateFlow<Map<String, Pair<Int, Int>>>(emptyMap())
     val appNotificationCounts: StateFlow<Map<String, Pair<Int, Int>>> = _appNotificationCounts.asStateFlow()
 
     init {
+        loadData()
+    }
+
+    private fun loadData() {
         viewModelScope.launch {
             appRepository.getTrackedApps().collect { apps ->
                 _trackedApps.value = apps
                 updateNotificationCounts(apps)
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun refreshData() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+
+            try {
+                val apps = appRepository.getTrackedApps().first()
+                _trackedApps.value = apps
+                updateNotificationCounts(apps)
+            } catch (e: Exception) {
+                // Manejar error si es necesario
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }

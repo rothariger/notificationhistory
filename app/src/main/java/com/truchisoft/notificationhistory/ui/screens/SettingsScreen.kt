@@ -1,34 +1,36 @@
 package com.truchisoft.notificationhistory.ui.screens
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.truchisoft.notificationhistory.LocaleMode
+import com.truchisoft.notificationhistory.R
 import com.truchisoft.notificationhistory.ThemeMode
+import com.truchisoft.notificationhistory.ui.components.SettingsItem
 import com.truchisoft.notificationhistory.ui.viewmodels.SettingsViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -39,80 +41,118 @@ fun SettingsScreen(
     onBackClick: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val themeSettings by viewModel.themeSettings.collectAsState()
+    val themeMode by viewModel.themeSettings.collectAsState()
+    val localeMode by viewModel.localeSettings.collectAsState()
     val ignoredMessages by viewModel.ignoredMessages.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+
+    // Estado para PullToRefresh
+    val pullToRefreshState = rememberPullToRefreshState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Configuración") },
+                title = { Text(stringResource(R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { viewModel.refreshData() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
                 }
             )
         }
     ) { paddingValues ->
-        Column(
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.refreshData() },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
+                .padding(paddingValues),
+            state = pullToRefreshState
         ) {
-            Text(
-                text = "Tema",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
 
-            ThemeOption(
-                title = "Predeterminado del sistema",
-                selected = themeSettings == ThemeMode.SYSTEM,
-                onClick = { viewModel.setThemeMode(ThemeMode.SYSTEM) }
-            )
-
-            ThemeOption(
-                title = "Claro",
-                selected = themeSettings == ThemeMode.LIGHT,
-                onClick = { viewModel.setThemeMode(ThemeMode.LIGHT) }
-            )
-
-            ThemeOption(
-                title = "Oscuro",
-                selected = themeSettings == ThemeMode.DARK,
-                onClick = { viewModel.setThemeMode(ThemeMode.DARK) }
-            )
-
-            Text(
-                text = "Mensajes ignorados",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
-            )
-
-            if (ignoredMessages.isEmpty()) {
-                Card(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                item {
                     Text(
-                        text = "No hay mensajes en el diccionario de ignorados",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = stringResource(R.string.appearance),
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
-            } else {
-                LazyColumn {
+
+                item {
+                    SettingsItem(
+                        title = stringResource(R.string.theme),
+                        subtitle = when (themeMode) {
+                            ThemeMode.LIGHT -> stringResource(R.string.light)
+                            ThemeMode.DARK -> stringResource(R.string.dark)
+                            ThemeMode.SYSTEM -> stringResource(R.string.system_default)
+                        },
+                        onClick = {
+                            // Acciones para cambiar el tema
+                        }
+                    )
+                }
+
+                item {
+                    SettingsItem(
+                        title = stringResource(R.string.language),
+                        subtitle = when (localeMode) {
+                            LocaleMode.ENGLISH -> stringResource(R.string.english)
+                            LocaleMode.SPANISH -> stringResource(R.string.spanish)
+                            LocaleMode.GERMAN -> stringResource(R.string.german)
+                            LocaleMode.FRENCH -> stringResource(R.string.french)
+                            LocaleMode.ITALIAN -> stringResource(R.string.italian)
+                            LocaleMode.PORTUGUESE -> stringResource(R.string.portuguese)
+                            else -> stringResource(R.string.system_language)
+                        },
+                        onClick = {
+                            // Acciones para cambiar el idioma
+                        }
+                    )
+                }
+
+                item {
+                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                    Text(
+                        text = stringResource(R.string.ignored_messages),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+
+                if (ignoredMessages.isEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.no_ignored_messages),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                } else {
                     items(ignoredMessages) { ignoredMessage ->
                         val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
                         ListItem(
                             headlineContent = { Text(ignoredMessage.pattern) },
                             supportingContent = {
-                                Text("Añadido: ${dateFormat.format(ignoredMessage.dateAdded)}")
+                                Text(
+                                    text = stringResource(R.string.added_on, dateFormat.format(ignoredMessage.dateAdded))
+                                )
                             },
                             trailingContent = {
                                 IconButton(onClick = { viewModel.removeIgnoredMessage(ignoredMessage.id) }) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = stringResource(R.string.delete)
+                                    )
                                 }
                             }
                         )
@@ -120,43 +160,5 @@ fun SettingsScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ThemeOption(
-    title: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable(onClick = onClick)
-    ) {
-        val (radioButton, text) = createRefs()
-
-        RadioButton(
-            selected = selected,
-            onClick = onClick,
-            modifier = Modifier.constrainAs(radioButton) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
-        )
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.constrainAs(text) {
-                start.linkTo(radioButton.end, 16.dp)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-            }
-        )
     }
 }

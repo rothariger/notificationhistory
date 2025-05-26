@@ -1,6 +1,7 @@
 package com.truchisoft.notificationhistory.di
 
 import android.content.Context
+import android.content.pm.PackageManager
 import com.truchisoft.notificationhistory.data.database.ObjectBox
 import dagger.Module
 import dagger.Provides
@@ -17,7 +18,15 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideObjectBoxStore(@ApplicationContext context: Context): BoxStore {
-        ObjectBox.init(context)
-        return ObjectBox.boxStore
+        if (!ObjectBox.isInitialized()) {
+            ObjectBox.init(context)
+        }
+        return ObjectBox.getBoxStore()
+    }
+
+    @Provides
+    @Singleton
+    fun providePackageManager(@ApplicationContext context: Context): PackageManager {
+        return context.packageManager
     }
 }

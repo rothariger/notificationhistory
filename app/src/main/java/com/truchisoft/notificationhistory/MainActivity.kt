@@ -21,13 +21,14 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val themeSettings by settingsViewModel.themeSettings.collectAsState()
-            
+            val localeSettings by settingsViewModel.localeSettings.collectAsState()
+
             val isDarkTheme = when (themeSettings) {
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
                 ThemeMode.DARK -> true
                 ThemeMode.LIGHT -> false
             }
-            
+
             NotificationHistoryTheme(darkTheme = isDarkTheme) {
                 AppNavHost(navController = navController)
             }

@@ -1,5 +1,6 @@
 package com.truchisoft.notificationhistory.ui.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.truchisoft.notificationhistory.data.database.entities.AppEntity
@@ -19,8 +20,11 @@ import javax.inject.Inject
 class AppDetailViewModel @Inject constructor(
     private val appRepository: AppRepository,
     private val notificationRepository: NotificationRepository,
-    private val ignoredMessageRepository: IgnoredMessageRepository
+    private val ignoredMessageRepository: IgnoredMessageRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val packageName: String = savedStateHandle.get<String>("packageName") ?: ""
 
     private val _app = MutableStateFlow<AppEntity?>(null)
     val app: StateFlow<AppEntity?> = _app.asStateFlow()
@@ -28,134 +32,162 @@ class AppDetailViewModel @Inject constructor(
     private val _notifications = MutableStateFlow<List<NotificationEntity>>(emptyList())
     val notifications: StateFlow<List<NotificationEntity>> = _notifications.asStateFlow()
 
-    private val _showOnlyUnread = MutableStateFlow(false)
-    val showOnlyUnread: StateFlow<Boolean> = _showOnlyUnread.asStateFlow()
+    private val _filteredNotifications = MutableStateFlow<List<NotificationEntity>>(emptyList())
+    val filteredNotifications: StateFlow<List<NotificationEntity>> = _filteredNotifications.asStateFlow()
 
-    private var currentPackageName: String? = null
-    private var allNotifications: List<NotificationEntity> = emptyList()
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun loadAppDetails(packageName: String) {
-        currentPackageName = packageName
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _isSearchActive = MutableStateFlow(false)
+    val isSearchActive: StateFlow<Boolean> = _isSearchActive.asStateFlow()
+
+    private val _selectionMode = MutableStateFlow(false)
+    val selectionMode: StateFlow<Boolean> = _selectionMode.asStateFlow()
+
+    private val _selectedItems = MutableStateFlow<Set<Long>>(emptySet())
+    val selectedItems: StateFlow<Set<Long>> = _selectedItems.asStateFlow()
+
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
         viewModelScope.launch {
-            appRepository.getAppByPackageName(packageName)?.let { app ->
-                _app.value = app
-            }
+            _isLoading.value = true
 
-            // Asegurarnos de que estamos filtrando por el packageName correcto
             try {
-                val notificationsList = notificationRepository.getNotificationsByApp(packageName).first()
-                allNotifications = notificationsList
-                updateFilteredNotifications()
+                val appEntity = appRepository.getAppByPackageName(packageName)
+                _app.value = appEntity
 
-                // Configurar un collector para actualizaciones futuras
-                notificationRepository.getNotificationsByApp(packageName).collect { notifications ->
-                    allNotifications = notifications
+                notificationRepository.getNotificationsByApp(packageName).collect { notificationList ->
+                    _notifications.value = notificationList
                     updateFilteredNotifications()
+                    _isLoading.value = false
                 }
             } catch (e: Exception) {
-                // Si hay un error, intentamos obtener todas las notificaciones y filtrar manualmente
-                notificationRepository.getAllNotifications().collect { allNotifications ->
-                    val filtered = allNotifications.filter { it.appPackageName == packageName }
-                    this@AppDetailViewModel.allNotifications = filtered
-                    updateFilteredNotifications()
-                }
+                // Manejar error si es necesario
+                _isLoading.value = false
             }
         }
     }
 
-    private fun updateFilteredNotifications() {
-        _notifications.value = if (_showOnlyUnread.value) {
-            allNotifications.filter { !it.isRead }
-        } else {
-            allNotifications
-        }
-    }
+    fun refreshData() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
 
-    fun toggleShowOnlyUnread() {
-        _showOnlyUnread.value = !_showOnlyUnread.value
-        updateFilteredNotifications()
+            try {
+                val appEntity = appRepository.getAppByPackageName(packageName)
+                _app.value = appEntity
+
+                val notificationList = notificationRepository.getNotificationsByApp(packageName).first()
+                _notifications.value = notificationList
+                updateFilteredNotifications()
+            } catch (e: Exception) {
+                // Manejar error si es necesario
+            } finally {
+                _isRefreshing.value = false
+            }
+        }
     }
 
     fun markAsRead(notificationId: Long) {
         viewModelScope.launch {
             notificationRepository.markAsRead(notificationId)
-
-            // Actualizar la lista después de marcar como leído
-            allNotifications = allNotifications.map {
-                if (it.id == notificationId) it.copy(isRead = true) else it
-            }
-            updateFilteredNotifications()
         }
     }
 
     fun markAllAsRead() {
-        currentPackageName?.let { packageName ->
-            viewModelScope.launch {
-                try {
-                    notificationRepository.markAllAsRead(packageName)
-
-                    // Actualizar la lista después de marcar todo como leído
-                    allNotifications = allNotifications.map {
-                        it.copy(isRead = true, uniqueKey = it.uniqueKey ?: "")
-                    }
-                    updateFilteredNotifications()
-                } catch (e: Exception) {
-                    // Si hay un error, actualizamos manualmente
-                    allNotifications.forEach { notification ->
-                        if (!notification.isRead) {
-                            notificationRepository.markAsRead(notification.id)
-                        }
-                    }
-                    allNotifications = allNotifications.map {
-                        it.copy(isRead = true, uniqueKey = it.uniqueKey ?: "")
-                    }
-                    updateFilteredNotifications()
-                }
-            }
-        }
-    }
-
-    fun clearNotifications() {
-        currentPackageName?.let { packageName ->
-            viewModelScope.launch {
-                try {
-                    notificationRepository.deleteNotificationsByApp(packageName)
-                    allNotifications = emptyList()
-                    updateFilteredNotifications()
-                } catch (e: Exception) {
-                    // Si hay un error, intentamos obtener todas las notificaciones y eliminar manualmente
-                    val notificationsToDelete = allNotifications
-                    for (notification in notificationsToDelete) {
-                        notificationRepository.deleteNotification(notification.id)
-                    }
-                    allNotifications = emptyList()
-                    updateFilteredNotifications()
-                }
-            }
+        viewModelScope.launch {
+            notificationRepository.markAllAsRead(packageName)
         }
     }
 
     fun deleteNotification(notificationId: Long) {
         viewModelScope.launch {
             notificationRepository.deleteNotification(notificationId)
+        }
+    }
 
-            // Actualizar la lista después de eliminar
-            allNotifications = allNotifications.filter { it.id != notificationId }
+    fun deleteAllNotifications() {
+        viewModelScope.launch {
+            notificationRepository.deleteNotificationsByApp(packageName)
+        }
+    }
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+        updateFilteredNotifications()
+    }
+
+    fun setSearchActive(active: Boolean) {
+        _isSearchActive.value = active
+        if (!active) {
+            _searchQuery.value = ""
             updateFilteredNotifications()
         }
     }
 
-    fun addToIgnoreList(title: String, content: String) {
-        viewModelScope.launch {
-            // Decidir qué patrón añadir al diccionario de ignorados
-            val pattern = when {
-                title.isNotEmpty() -> title
-                content.isNotEmpty() -> content
-                else -> return@launch // No hay nada que añadir
-            }
+    private fun updateFilteredNotifications() {
+        val query = _searchQuery.value.trim().lowercase()
+        val allNotifications = _notifications.value
 
-            ignoredMessageRepository.addIgnoredMessage(pattern, isExactMatch = true)
+        _filteredNotifications.value = if (query.isEmpty()) {
+            allNotifications
+        } else {
+            allNotifications.filter { notification ->
+                (notification.title?.lowercase()?.contains(query) == true) ||
+                        (notification.content?.lowercase()?.contains(query) == true)
+            }
+        }
+    }
+
+    fun toggleSelectionMode() {
+        _selectionMode.value = !_selectionMode.value
+        if (!_selectionMode.value) {
+            _selectedItems.value = emptySet()
+        }
+    }
+
+    fun toggleItemSelection(notificationId: Long) {
+        val currentSelection = _selectedItems.value.toMutableSet()
+        if (currentSelection.contains(notificationId)) {
+            currentSelection.remove(notificationId)
+        } else {
+            currentSelection.add(notificationId)
+        }
+        _selectedItems.value = currentSelection
+
+        // Si no hay elementos seleccionados, salir del modo selección
+        if (currentSelection.isEmpty()) {
+            _selectionMode.value = false
+        }
+    }
+
+    fun selectAllItems() {
+        val allIds = _filteredNotifications.value.map { it.id }.toSet()
+        _selectedItems.value = allIds
+    }
+
+    fun deleteSelectedItems() {
+        viewModelScope.launch {
+            val itemsToDelete = _selectedItems.value.toList()
+            notificationRepository.deleteNotifications(itemsToDelete)
+            _selectedItems.value = emptySet()
+            _selectionMode.value = false
+        }
+    }
+
+    fun addToIgnoreList(pattern: String) {
+        viewModelScope.launch {
+            if (pattern.isNotBlank()) {
+                ignoredMessageRepository.addIgnoredMessage(pattern, isExactMatch = true)
+            }
         }
     }
 }

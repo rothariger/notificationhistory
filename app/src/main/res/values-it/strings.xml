@@ -6,27 +6,27 @@
     <string name="no_apps_tracked">Nessuna app monitorata</string>
     <string name="tap_plus_to_add">Tocca il pulsante + per aggiungere app</string>
     <string name="total_apps">Totale: %1$d applicazioni</string>
-    <string name="unread">Non lette: %1$d</string>
+    <string name="unread">Non letti: %1$d</string>
     <string name="total">Totale: %1$d</string>
-    <string name="permission_required">Autorizzazione richiesta</string>
-    <string name="notification_access_needed">Questa applicazione necessita dell\'accesso alle notifiche per funzionare. Si prega di abilitare l\'accesso alle notifiche nelle impostazioni di sistema.</string>
+    <string name="permission_required">Permesso richiesto</string>
+    <string name="notification_access_needed">Questa app ha bisogno di accedere alle notifiche per funzionare. Abilita l\'accesso alle notifiche nelle impostazioni di sistema.</string>
     <string name="go_to_settings">Vai alle Impostazioni</string>
     <string name="later">Più tardi</string>
 
     <!-- App Detail Screen -->
-    <string name="app_details">Dettagli App</string>
+    <string name="app_details">Dettagli app</string>
     <string name="search_notifications">Cerca notifiche</string>
     <string name="show_only_unread">Mostra solo non lette</string>
     <string name="multi_selection">Selezione multipla</string>
     <string name="no_notifications">Nessuna notifica salvata per questa app</string>
     <string name="no_unread_notifications">Nessuna notifica non letta per questa app</string>
     <string name="cancel_selection">Annulla selezione</string>
-    <string name="select_all">Seleziona tutto</string>
+    <string name="select_all">Seleziona tutti</string>
     <string name="delete_selected">Elimina selezionati</string>
     <string name="selected">%1$d selezionati</string>
-    <string name="mark_all_read">Segna tutte come lette</string>
+    <string name="mark_all_read">Segna tutti come letti</string>
     <string name="delete_all">Elimina tutte le notifiche</string>
-    <string name="new_notification">Nuova</string>
+    <string name="new_notification">Nuovo</string>
     <string name="no_title">Nessun titolo</string>
     <string name="no_content">Nessun contenuto</string>
     <string name="copy">Copia</string>
@@ -42,7 +42,7 @@
     <string name="added_to_ignored">Aggiunto al dizionario degli ignorati</string>
 
     <!-- Add Apps Screen -->
-    <string name="add_apps_to_track">Aggiungi App da Monitorare</string>
+    <string name="add_apps_to_track">Aggiungi app da monitorare</string>
     <string name="search_apps">Cerca app</string>
 
     <!-- Settings Screen -->
@@ -61,13 +61,31 @@
     <string name="portuguese">Portoghese</string>
     <string name="italian">Italiano</string>
     <string name="system_language">Lingua di sistema</string>
-    <string name="biometric_lock">Blocco Biometrico</string>
-    <string name="enable_biometric">Attiva autenticazione biometrica</string>
-    <string name="biometric_description">Proteggi la tua cronologia delle notifiche con l\'autenticazione biometrica (impronta digitale, volto, ecc.)</string>
+    <string name="biometric_lock">Blocco biometrico</string>
+    <string name="enable_biometric">Abilita autenticazione biometrica</string>
+    <string name="biometric_description">Proteggi la tua cronologia delle notifiche con l\'autenticazione biometrica (impronta digitale, viso, ecc.)</string>
     <string name="biometric_prompt_title">Autenticati per accedere</string>
-    <string name="biometric_prompt_subtitle">Usa le tue credenziali biometriche per accedere alla Cronologia delle Notifiche</string>
+    <string name="biometric_prompt_subtitle">Usa le tue credenziali biometriche per accedere alla Cronologia Notifiche</string>
     <string name="biometric_prompt_description">Questo garantisce che i tuoi dati di notifica rimangano privati</string>
-    <string name="biometric_error">Autenticazione fallita. Per favore riprova.</string>
+    <string name="biometric_error">Autenticazione fallita. Riprova.</string>
     <string name="biometric_not_available">L\'autenticazione biometrica non è disponibile su questo dispositivo</string>
     <string name="cancel">Annulla</string>
+
+    <!-- Additional strings needed for the app -->
+    <string name="more_options">Altre opzioni</string>
+    <string name="clear">Cancella</string>
+    <string name="search">Cerca</string>
+    <string name="not_selected">Non selezionato</string>
+    <string name="new_label">Nuovo</string>
+    <string name="delete_notifications">Elimina notifiche</string>
+    <string name="delete_all_notifications_confirmation">Sei sicuro di voler eliminare tutte le notifiche di %s?</string>
+    <string name="delete_selected_confirmation">Sei sicuro di voler eliminare %d notifiche selezionate?</string>
+    <string name="no_search_results">Nessun risultato per \"%s\"</string>
+    <string name="unread_count">Non letti: %d</string>
+    <string name="total_count">Totale: %d</string>
+    <string name="no_tracked_apps">Nessuna app monitorata</string>
+    <string name="notification_permission_explanation">Questa app ha bisogno di accedere alle notifiche per funzionare. Abilita l\'accesso alle notifiche nelle impostazioni di sistema.</string>
+    <string name="add_apps">Aggiungi app</string>
+    <string name="mark_all_as_read">Segna tutti come letti</string>
+    <string name="selection_mode">Modalità selezione</string>
 </resources>

@@ -1,0 +1,91 @@
+<resources>
+    <string name="app_name">Historique des Notifications</string>
+
+    <!-- Main Screen -->
+    <string name="title_notification_history">Historique des Notifications</string>
+    <string name="no_apps_tracked">Aucune application suivie</string>
+    <string name="tap_plus_to_add">Appuyez sur le bouton + pour ajouter des applications</string>
+    <string name="total_apps">Total: %1$d applications</string>
+    <string name="unread">Non lus: %1$d</string>
+    <string name="total">Total: %1$d</string>
+    <string name="permission_required">Permission requise</string>
+    <string name="notification_access_needed">Cette application a besoin d\'accéder aux notifications pour fonctionner. Veuillez activer l\'accès aux notifications dans les paramètres du système.</string>
+    <string name="go_to_settings">Aller aux Paramètres</string>
+    <string name="later">Plus tard</string>
+
+    <!-- App Detail Screen -->
+    <string name="app_details">Détails de l\'application</string>
+    <string name="search_notifications">Rechercher des notifications</string>
+    <string name="show_only_unread">Afficher uniquement les non lus</string>
+    <string name="multi_selection">Sélection multiple</string>
+    <string name="no_notifications">Aucune notification enregistrée pour cette application</string>
+    <string name="no_unread_notifications">Aucune notification non lue pour cette application</string>
+    <string name="cancel_selection">Annuler la sélection</string>
+    <string name="select_all">Tout sélectionner</string>
+    <string name="delete_selected">Supprimer la sélection</string>
+    <string name="selected">%1$d sélectionnés</string>
+    <string name="mark_all_read">Marquer tout comme lu</string>
+    <string name="delete_all">Supprimer toutes les notifications</string>
+    <string name="new_notification">Nouveau</string>
+    <string name="no_title">Sans titre</string>
+    <string name="no_content">Sans contenu</string>
+    <string name="copy">Copier</string>
+    <string name="view_details">Voir les détails techniques</string>
+    <string name="mark_as_read">Marquer comme lu</string>
+    <string name="add_to_ignored">Ajouter aux ignorés</string>
+    <string name="delete">Supprimer</string>
+    <string name="technical_details">Détails techniques</string>
+    <string name="no_technical_data">Aucune donnée technique disponible</string>
+    <string name="error_processing">Erreur lors du traitement des données techniques</string>
+    <string name="close">Fermer</string>
+    <string name="notification_copied">Notification copiée</string>
+    <string name="added_to_ignored">Ajouté au dictionnaire d\'ignorés</string>
+
+    <!-- Add Apps Screen -->
+    <string name="add_apps_to_track">Ajouter des applications à suivre</string>
+    <string name="search_apps">Rechercher des applications</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Paramètres</string>
+    <string name="theme">Thème</string>
+    <string name="system_default">Par défaut du système</string>
+    <string name="light">Clair</string>
+    <string name="dark">Sombre</string>
+    <string name="ignored_messages">Messages ignorés</string>
+    <string name="no_ignored_messages">Aucun message dans le dictionnaire d\'ignorés</string>
+    <string name="added">Ajouté: %1$s</string>
+    <string name="language">Langue</string>
+    <string name="english">Anglais</string>
+    <string name="spanish">Espagnol</string>
+    <string name="german">Allemand</string>
+    <string name="portuguese">Portugais</string>
+    <string name="italian">Italien</string>
+    <string name="system_language">Langue du système</string>
+    <string name="biometric_lock">Verrouillage biométrique</string>
+    <string name="enable_biometric">Activer l\'authentification biométrique</string>
+    <string name="biometric_description">Protégez votre historique de notifications avec l\'authentification biométrique (empreinte digitale, visage, etc.)</string>
+    <string name="biometric_prompt_title">Authentifiez-vous pour accéder</string>
+    <string name="biometric_prompt_subtitle">Utilisez vos informations d\'identification biométriques pour accéder à l\'Historique des Notifications</string>
+    <string name="biometric_prompt_description">Cela garantit que vos données de notification restent privées</string>
+    <string name="biometric_error">Échec de l\'authentification. Veuillez réessayer.</string>
+    <string name="biometric_not_available">L\'authentification biométrique n\'est pas disponible sur cet appareil</string>
+    <string name="cancel">Annuler</string>
+
+    <!-- Additional strings needed for the app -->
+    <string name="more_options">Plus d\'options</string>
+    <string name="clear">Effacer</string>
+    <string name="search">Rechercher</string>
+    <string name="not_selected">Non sélectionné</string>
+    <string name="new_label">Nouveau</string>
+    <string name="delete_notifications">Supprimer les notifications</string>
+    <string name="delete_all_notifications_confirmation">Êtes-vous sûr de vouloir supprimer toutes les notifications de %s?</string>
+    <string name="delete_selected_confirmation">Êtes-vous sûr de vouloir supprimer %d notifications sélectionnées?</string>
+    <string name="no_search_results">Aucun résultat pour \"%s\"</string>
+    <string name="unread_count">Non lus: %d</string>
+    <string name="total_count">Total: %d</string>
+    <string name="no_tracked_apps">Aucune application suivie</string>
+    <string name="notification_permission_explanation">Cette application a besoin d\'accéder aux notifications pour fonctionner. Veuillez activer l\'accès aux notifications dans les paramètres du système.</string>
+    <string name="add_apps">Ajouter des applications</string>
+    <string name="mark_all_as_read">Marquer tout comme lu</string>
+    <string name="selection_mode">Mode sélection</string>
+</resources>

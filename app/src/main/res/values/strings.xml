@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Notification History</string>
+    <string name="light_theme" translatable="false">Light Theme</string>
+    <string name="dark_theme" translatable="false">Dark Theme</string>
+    <string name="system_theme" translatable="false">System Theme</string>
 
     <!-- Main Screen -->
     <string name="title_notification_history">Notification History</string>
@@ -60,6 +63,10 @@
     <string name="german">German</string>
     <string name="portuguese">Portuguese</string>
     <string name="italian">Italian</string>
+    <string name="french" translatable="false">French</string>
+    <string name="back" translatable="false">Back</string>
+    <string name="added_on" translatable="false">Added on</string>
+    <string name="appearance" translatable="false">Appearance</string>
     <string name="system_language">System language</string>
     <string name="biometric_lock">Biometric Lock</string>
     <string name="enable_biometric">Enable biometric authentication</string>
@@ -70,4 +77,22 @@
     <string name="biometric_error">Authentication failed. Please try again.</string>
     <string name="biometric_not_available">Biometric authentication is not available on this device</string>
     <string name="cancel">Cancel</string>
+
+    <!-- Additional strings needed for the app -->
+    <string name="more_options">More options</string>
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
+    <string name="not_selected">Not selected</string>
+    <string name="new_label">New</string>
+    <string name="delete_notifications">Delete notifications</string>
+    <string name="delete_all_notifications_confirmation">Are you sure you want to delete all notifications from %s?</string>
+    <string name="delete_selected_confirmation">Are you sure you want to delete %d selected notifications?</string>
+    <string name="no_search_results">No results for \"%s\"</string>
+    <string name="unread_count">Unread: %d</string>
+    <string name="total_count">Total: %d</string>
+    <string name="no_tracked_apps">No apps being tracked</string>
+    <string name="notification_permission_explanation">This app needs access to notifications to work. Please enable notification access in system settings.</string>
+    <string name="add_apps">Add Apps</string>
+    <string name="mark_all_as_read">Mark all as read</string>
+    <string name="selection_mode">Selection mode</string>
 </resources>

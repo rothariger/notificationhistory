@@ -12,5 +12,6 @@ data class AppEntity(
     var appName: String,
     var isTracked: Boolean = false
 ) {
+    // Relación con notificaciones
     lateinit var notifications: ToMany<NotificationEntity>
 }
